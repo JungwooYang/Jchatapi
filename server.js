@@ -23,7 +23,7 @@ const typeDefs = gql`
     author: User
   }
   type Query {
-    allTweets: [Tweet!>]!
+    allTweets: [Tweet!]!
     tweet(id: ID!): Tweet
   }
   type Mutation {
@@ -43,7 +43,7 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({ typeDefs });
+const server = new ApolloServer({ typeDefs, resolvers });
 
 server.listen().then(({ url }) => {
   console.log(`Running on ${url}`);
