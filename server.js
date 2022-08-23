@@ -1,5 +1,15 @@
 import { ApolloServer, gql } from "apollo-server";
 
+const tweets = [
+  {
+    id: "1",
+    text: "i am the first.",
+  },
+  {
+    id: "2",
+    text: "i am the second.",
+  },
+];
 const typeDefs = gql`
   type User {
     id: ID!
@@ -10,7 +20,7 @@ const typeDefs = gql`
   type Tweet {
     id: ID!
     text: String!
-    author: User!
+    author: User
   }
   type Query {
     allTweets: [Tweet!>]!
@@ -21,6 +31,17 @@ const typeDefs = gql`
     deleteTweet(id: ID!): Boolean!
   }
 `;
+
+const resolvers = {
+  Query: {
+    allTweets() {
+      return tweets;
+    },
+    tweet(root, { id }) {
+      return tweets.find((tweet) => tweet.id === id);
+    },
+  },
+};
 
 const server = new ApolloServer({ typeDefs });
 
