@@ -4,10 +4,12 @@ let tweets = [
   {
     id: "1",
     text: "i am the first.",
+    userId: "2",
   },
   {
     id: "2",
     text: "i am the second.",
+    userId: "1",
   },
 ];
 
@@ -63,12 +65,21 @@ const resolvers = {
   },
   Mutation: {
     postTweet(root, { text, userId }) {
-      const newTweet = {
-        id: tweets.length + 1,
-        text,
-      };
-      tweets.push(newTweet);
-      return newTweet;
+      try {
+        if (users.find(user.id === userId)) {
+          const newTweet = {
+            id: tweets.length + 1,
+            text,
+            userId,
+          };
+          tweets.push(newTweet);
+          return newTweet;
+        } else {
+          throw new Error("user does not exist.");
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     deleteTweet(root, { id }) {
       const tweet = tweets.find((tweet) => tweet.id === id);
@@ -79,6 +90,11 @@ const resolvers = {
     User: {
       fullName({ firstName, lastName }) {
         return `${firstName} ${lastName}`;
+      },
+    },
+    Tweet: {
+      author({ userId }) {
+        return users.find(user.id === userId);
       },
     },
   },
