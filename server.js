@@ -1,19 +1,18 @@
 import { ApolloServer, gql } from "apollo-server";
-import { fetch } from "node-fetch";
+import fetch from "node-fetch";
 
 let tweets = [
   {
     id: "1",
-    text: "i am the first.",
+    text: "first one!",
     userId: "2",
   },
   {
     id: "2",
-    text: "i am the second.",
+    text: "second one",
     userId: "1",
   },
 ];
-
 let users = [
   {
     id: "1",
@@ -26,11 +25,9 @@ let users = [
     lastName: "Mask",
   },
 ];
-
 const typeDefs = gql`
   type User {
     id: ID!
-    username: String!
     firstName: String!
     lastName: String!
     """
@@ -38,13 +35,16 @@ const typeDefs = gql`
     """
     fullName: String!
   }
+  """
+  Tweet object represents a resource for  a Tweet
+  """
   type Tweet {
     id: ID!
     text: String!
     author: User
   }
   type Query {
-    allMovies: [Movies!]!
+    allMovies: [Movie!]!
     allUsers: [User!]!
     allTweets: [Tweet!]!
     tweet(id: ID!): Tweet
@@ -96,8 +96,13 @@ const resolvers = {
     },
     allMovies() {
       return fetch("https://yts.mx/api/v2/list_movies.json")
-        .then((response) => response.json())
+        .then((r) => r.json())
         .then((json) => json.data.movies);
+    },
+    movie(_, { id }) {
+      return fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`)
+        .then((r) => r.json())
+        .then((json) => json.data.movie);
     },
   },
   Mutation: {
@@ -124,15 +129,15 @@ const resolvers = {
       tweets = tweets.filter((tweet) => tweet.id !== id);
       return true;
     },
-    User: {
-      fullName({ firstName, lastName }) {
-        return `${firstName} ${lastName}`;
-      },
+  },
+  User: {
+    fullName({ firstName, lastName }) {
+      return `${firstName} ${lastName}`;
     },
-    Tweet: {
-      author({ userId }) {
-        return users.find(user.id === userId);
-      },
+  },
+  Tweet: {
+    author({ userId }) {
+      return users.find(user.id === userId);
     },
   },
 };
