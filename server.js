@@ -137,7 +137,7 @@ const resolvers = {
   },
   Tweet: {
     author({ userId }) {
-      return users.find(user.id === userId);
+      return users.find((user) => user.id === userId);
     },
   },
 };
